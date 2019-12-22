@@ -3,7 +3,7 @@ import random as rd
 
 class GeneticAlgorithm():
 
-    decimal = 0
+    decimal = 3
     input_size = 0
     hidden_size = 0
     hidden_neurons = 0
@@ -13,7 +13,7 @@ class GeneticAlgorithm():
     _best_model = None
     _best_fitness = 0
 
-    def __init__(self,input_size,hidden_size,hidden_neurons,out_size,population_size,mutation_per):
+    def __init__(self, input_size :int, hidden_size :int, hidden_neurons :int, out_size :int, population_size :int, mutation_per :int):
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.hidden_neurons = hidden_neurons
