@@ -17,7 +17,7 @@ class Activations():
     def linear(self, x :list):
         return x
 
-    def softmax(self, x :list):
+    def binary(self, x :list):
         x = np.where(x > 0.5, 1, 0)
         return x
 
