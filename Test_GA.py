@@ -18,7 +18,7 @@ def make_model():
     model.add_layer(15,8, nn.Activations().sigmoid)
     model.add_layer(8,4, nn.Activations().sigmoid)
     model.add_layer(4,2, nn.Activations().sigmoid)
-    model.add_layer(2,1, nn.Activations().softmax)
+    model.add_layer(2,1, nn.Activations().binary)
     return model
 
 def make_models(n_population):
