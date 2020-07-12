@@ -21,7 +21,7 @@ class GeneticAlgorithm():
         self.elitism = elitism
         self._mutation_rate = initial_mutation_rate
         self._batch_size = n_population//n_pairs
-        self._best_fitness = -9999
+        self._best_fitness = 0
         self._best_model = None
     
 
@@ -29,7 +29,9 @@ class GeneticAlgorithm():
         mutations_idx = np.random.choice(len(offspring_individual), n_mutations_neurons, replace=False)
         for i in range(0, len(mutations_idx)):
             neuron = offspring_individual[mutations_idx[i]]
-            neuron.create_weights(len(neuron.weights))
+            neuron = (np.random.randint(low=-1000,high=1000,size=len(neuron)) * 0.001).tolist()
+            offspring_individual[mutations_idx[i]] = neuron
+
         return offspring_individual
 
 
@@ -38,9 +40,9 @@ class GeneticAlgorithm():
         n_mutations = int(n_mutations)
 
         n_mutations_neurons = self._mutation_rate * len(offspring[0])
-        n_mutations_neurons = int(n_mutations)
+        n_mutations_neurons = int(n_mutations_neurons)
 
-        mutations_idx = np.random.choice(len(offspring), n_mutations, replace=False)
+        mutations_idx = np.random.choice(self.n_population, n_mutations, replace=False)
         for i in range(0, len(mutations_idx)):
             offspring[mutations_idx[i]] = self.mutate_neurons(offspring[mutations_idx[i]], n_mutations_neurons)
 
@@ -58,19 +60,15 @@ class GeneticAlgorithm():
         return offspring
 
 
-    def cross_over(self, neurons_one, neurons_two):
+    def cross_over(self, neurons_one :list, neurons_two :list):
         # Create copy of the first individual
-        new_individual = []
-        for i in range(0, len(neurons_one)):
-            neuron = nn.Neuron()
-            neuron.weights = neurons_one[i].weights.copy()
-            new_individual.append(neuron)
+        new_individual = neurons_one.copy()
 
         # Random copy neurons from second individual
         qnt_neurons = np.random.randint(low=1,high=len(neurons_one))
         idx = np.random.choice(len(neurons_one), qnt_neurons, replace=False)
         for i in range(0, qnt_neurons):
-            new_individual[idx[i]].weights = neurons_two[idx[i]].weights.copy() 
+            new_individual[idx[i]] = neurons_two[idx[i]].copy() 
         
         return new_individual
 
@@ -84,6 +82,7 @@ class GeneticAlgorithm():
             # Saves Best Individuals
             self._best_model = best_individual
             self._mutation_rate = self.initial_mutation_rate
+            self._best_fitness = fitness[idx[0]]
         # Else , Increase Mutation Rate
         else:
             new_mutation_rate = self._mutation_rate + self.mutation_rate_step
@@ -96,15 +95,17 @@ class GeneticAlgorithm():
 
     def create_model(self, offspring_individual :list, individual :nn.NeuralNetwork):
         new_model = nn.NeuralNetwork()
-        for layer in individual.layers:
-            new_model.add_layer(len(layer.neurons))
-        
-        count = 0
-        for i in range(0, len(individual.layers)):
-            for j in range(0, len(individual.layers[i].neurons)):
-                new_model.layers[i].neurons[j].weights = offspring_individual[count].weights
-                count += 1
+        new_model.activations = individual.activations
+        for i in range(0, len(offspring_individual)):
+            offspring_individual[i] = np.array(offspring_individual[i])
 
+        for layer in individual.layers:
+            qnt_neurons = len(layer)
+            layer_neurons = offspring_individual[0:qnt_neurons]
+            new_layer = np.reshape(layer_neurons, layer.shape)
+            new_model.layers.append(new_layer)
+
+            offspring_individual = offspring_individual[qnt_neurons:len(offspring_individual)]
         return new_model
 
 
@@ -133,7 +134,3 @@ class GeneticAlgorithm():
                 offspring[0] = self._best_model
 
         return offspring
-
-
-
-
