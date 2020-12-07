@@ -29,7 +29,7 @@ class GeneticAlgorithm():
         mutations_idx = np.random.choice(len(offspring_individual), n_mutations_neurons, replace=False)
         for i in range(0, len(mutations_idx)):
             neuron = offspring_individual[mutations_idx[i]]
-            neuron = (np.random.randint(low=-1000,high=1000,size=len(neuron)) * 0.001).tolist()
+            neuron = (np.random.randint(low=-10000,high=10000,size=len(neuron)) * 0.0001).tolist()
             offspring_individual[mutations_idx[i]] = neuron
 
         return offspring_individual
